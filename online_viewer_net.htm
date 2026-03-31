@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Navigazione Sicura</title>
+    <style>
+        canvas { border: 2px solid #000; display: block; margin: 20px auto; background: #e0f7fa; }
+        body { text-align: center; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>Porta la nave al traguardo!</h1>
+    <p>Usa le frecce direzionali per muoverti.</p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let player = { x: 50, y: 175, w: 30, h: 30, speed: 5 };
+        let goal = { x: 550, y: 175, w: 40, h: 40 };
+        let enemies = [
+            { x: 200, y: 50, w: 40, h: 40, vy: 3 },
+            { x: 350, y: 300, w: 40, h: 40, vy: -3 },
+            { x: 450, y: 100, w: 40, h: 40, vy: 4 }
+        ];
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Disegna Traguardo
+            ctx.fillStyle = "green";
+            ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
+
+            // Disegna Nave
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            // Disegna Nemici
+            ctx.fillStyle = "red";
+            enemies.forEach(e => {
+                ctx.fillRect(e.x, e.y, e.w, e.h);
+                e.y += e.vy;
+                if (e.y <= 0 || e.y + e.h >= canvas.height) e.vy *= -1;
+
+                // Collisione
+                if (player.x < e.x + e.w && player.x + player.w > e.x &&
+                    player.y < e.y + e.h && player.y + player.h > e.y) {
+                    alert("Sei stato colpito! Riprova.");
+                    player.x = 50; player.y = 175;
+                }
+            });
+
+            // Arrivo
+            if (player.x < goal.x + goal.w && player.x + player.w > goal.x &&
+                player.y < goal.y + goal.h && player.y + player.h > goal.y) {
+                alert("Complimenti! Sei arrivato al porto.");
+                player.x = 50; player.y = 175;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp") player.y -= player.speed;
+            if (e.key === "ArrowDown") player.y += player.speed;
+            if (e.key === "ArrowLeft") player.x -= player.speed;
+            if (e.key === "ArrowRight") player.x += player.speed;
+        });
+
+        draw();
+    </script>
+</body>
+</html>
